@@ -1,0 +1,628 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --color-scheme: light dark;
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+}
+
+@layer base {
+  :root {
+    /* === MODERN MINIMALIST PALETTE === */
+    --background: 240 20% 99%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    /* Brand: Rich Violet/Purple */
+    --primary: 258 90% 62%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 15% 97%;
+    --secondary-foreground: 240 10% 25%;
+
+    --muted: 240 15% 96%;
+    --muted-foreground: 240 6% 52%;
+
+    --accent: 258 85% 96%;
+    --accent-foreground: 258 90% 50%;
+
+    --destructive: 4 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 91%;
+    --input: 240 10% 91%;
+    --ring: 258 90% 62%;
+
+    --radius: 0.625rem;
+
+    /* Status colors */
+    --success: 152 68% 40%;
+    --success-bg: 152 68% 96%;
+    --warning: 38 92% 52%;
+    --warning-bg: 38 92% 96%;
+    --info: 208 100% 54%;
+    --info-bg: 208 100% 96%;
+    --danger: 4 90% 58%;
+    --danger-bg: 4 90% 96%;
+
+    /* Purple variants */
+    --purple-50: 258 100% 98%;
+    --purple-100: 258 85% 94%;
+    --purple-200: 258 80% 87%;
+    --purple-500: 258 90% 62%;
+    --purple-600: 258 82% 55%;
+    --purple-700: 258 75% 48%;
+
+    /* Sidebar */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 240 10% 10%;
+    --sidebar-border: 240 10% 93%;
+    --sidebar-accent: 258 85% 96%;
+    --sidebar-accent-foreground: 258 90% 55%;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(0,0,0,.04);
+    --shadow-sm: 0 1px 3px 0 rgba(0,0,0,.06), 0 1px 2px -1px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.06), 0 4px 6px -4px rgba(0,0,0,.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,.06), 0 8px 10px -6px rgba(0,0,0,.04);
+  }
+
+  .dark {
+    --background: 240 12% 9%;
+    --foreground: 240 10% 95%;
+    --card: 240 12% 12%;
+    --card-foreground: 240 10% 95%;
+    --popover: 240 12% 12%;
+    --popover-foreground: 240 10% 95%;
+    --primary: 258 80% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 10% 18%;
+    --secondary-foreground: 240 10% 80%;
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 6% 55%;
+    --accent: 258 40% 22%;
+    --accent-foreground: 258 80% 75%;
+    --destructive: 4 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 258 80% 70%;
+
+    --sidebar: 240 12% 11%;
+    --sidebar-foreground: 240 10% 90%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-accent: 258 40% 22%;
+    --sidebar-accent-foreground: 258 80% 80%;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Smooth transitions for interactive elements only */
+  button, a, input, textarea, select, [role="button"] {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+}
+
+/* =====================================================
+   MODERN SCROLLBAR DESIGN
+   ===================================================== */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* =====================================================
+   BRAND GRADIENT SYSTEM
+   ===================================================== */
+.brand-gradient {
+  background: linear-gradient(135deg, hsl(258 90% 62%) 0%, hsl(285 80% 60%) 100%);
+}
+
+.brand-gradient-soft {
+  background: linear-gradient(135deg, hsl(258 90% 62% / 0.08) 0%, hsl(285 80% 60% / 0.06) 100%);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(135deg, hsl(258 90% 62%) 0%, hsl(285 75% 58%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =====================================================
+   GLASSMORPHISM CARDS
+   ===================================================== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dark .glass-card {
+  background: rgba(30, 28, 48, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* =====================================================
+   MODERN CARD STYLES
+   ===================================================== */
+.card-modern {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.card-modern:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* =====================================================
+   STAT CARD GRADIENT BACKGROUNDS
+   ===================================================== */
+.stat-card-purple {
+  background: linear-gradient(135deg, hsl(258 90% 62% / 0.08) 0%, hsl(258 90% 62% / 0.04) 100%);
+  border-color: hsl(258 90% 62% / 0.18);
+}
+
+.stat-card-blue {
+  background: linear-gradient(135deg, hsl(208 100% 54% / 0.08) 0%, hsl(208 100% 54% / 0.04) 100%);
+  border-color: hsl(208 100% 54% / 0.18);
+}
+
+.stat-card-green {
+  background: linear-gradient(135deg, hsl(152 68% 40% / 0.08) 0%, hsl(152 68% 40% / 0.04) 100%);
+  border-color: hsl(152 68% 40% / 0.18);
+}
+
+.stat-card-orange {
+  background: linear-gradient(135deg, hsl(38 92% 52% / 0.08) 0%, hsl(38 92% 52% / 0.04) 100%);
+  border-color: hsl(38 92% 52% / 0.18);
+}
+
+/* =====================================================
+   BADGE STYLES — MODERN PILL DESIGN
+   ===================================================== */
+.badge-purple {
+  background: hsl(258 85% 96%);
+  color: hsl(258 75% 48%);
+  border: 1px solid hsl(258 80% 87%);
+}
+
+.badge-blue {
+  background: hsl(208 100% 96%);
+  color: hsl(208 100% 38%);
+  border: 1px solid hsl(208 90% 85%);
+}
+
+.badge-green {
+  background: hsl(152 68% 94%);
+  color: hsl(152 68% 32%);
+  border: 1px solid hsl(152 60% 82%);
+}
+
+.badge-orange {
+  background: hsl(38 92% 96%);
+  color: hsl(38 80% 38%);
+  border: 1px solid hsl(38 85% 82%);
+}
+
+.badge-red {
+  background: hsl(4 90% 96%);
+  color: hsl(4 75% 42%);
+  border: 1px solid hsl(4 80% 85%);
+}
+
+.badge-gray {
+  background: hsl(240 10% 96%);
+  color: hsl(240 6% 38%);
+  border: 1px solid hsl(240 8% 88%);
+}
+
+/* =====================================================
+   PRIORITY BADGES
+   ===================================================== */
+.priority-high {
+  background: hsl(4 90% 96%);
+  color: hsl(4 75% 42%);
+  border: 1px solid hsl(4 80% 85%);
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.priority-medium {
+  background: hsl(38 92% 96%);
+  color: hsl(38 80% 38%);
+  border: 1px solid hsl(38 85% 82%);
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.priority-low {
+  background: hsl(208 100% 96%);
+  color: hsl(208 100% 38%);
+  border: 1px solid hsl(208 90% 85%);
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* =====================================================
+   STATUS BADGES
+   ===================================================== */
+.status-open {
+  background: hsl(258 85% 96%);
+  color: hsl(258 75% 48%);
+  border: 1px solid hsl(258 80% 87%);
+}
+
+.status-in-progress {
+  background: hsl(208 100% 96%);
+  color: hsl(208 100% 38%);
+  border: 1px solid hsl(208 90% 85%);
+}
+
+.status-resolved {
+  background: hsl(152 68% 94%);
+  color: hsl(152 68% 32%);
+  border: 1px solid hsl(152 60% 82%);
+}
+
+.status-pending {
+  background: hsl(38 92% 96%);
+  color: hsl(38 80% 38%);
+  border: 1px solid hsl(38 85% 82%);
+}
+
+/* =====================================================
+   SIDEBAR NAVIGATION
+   ===================================================== */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.nav-item:hover {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+.nav-item.active {
+  background: hsl(258 85% 96%);
+  color: hsl(258 75% 52%);
+  border-color: hsl(258 80% 90%);
+}
+
+.dark .nav-item.active {
+  background: hsl(258 40% 22%);
+  color: hsl(258 80% 80%);
+  border-color: hsl(258 40% 30%);
+}
+
+/* =====================================================
+   MODERN TABLE STYLES
+   ===================================================== */
+.modern-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--muted-foreground));
+  padding: 10px 14px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.modern-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  font-size: 13px;
+  color: hsl(var(--foreground));
+}
+
+.modern-table tr:hover td {
+  background: hsl(var(--secondary));
+}
+
+/* =====================================================
+   BUTTON VARIANTS
+   ===================================================== */
+.btn-primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px hsl(var(--primary) / 0.3);
+}
+
+.btn-primary:hover {
+  background: hsl(258 82% 55%);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 150ms ease;
+}
+
+.btn-secondary:hover {
+  background: hsl(var(--muted));
+  border-color: hsl(var(--muted-foreground) / 0.3);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 150ms ease;
+}
+
+.btn-ghost:hover {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+/* =====================================================
+   INPUT FIELDS — MODERN STYLE
+   ===================================================== */
+.input-modern {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: hsl(var(--foreground));
+  width: 100%;
+  outline: none;
+  transition: all 150ms ease;
+}
+
+.input-modern:focus {
+  background: hsl(var(--card));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+.input-modern::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* =====================================================
+   AI ELEMENTS
+   ===================================================== */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  background: linear-gradient(135deg, hsl(258 90% 62% / 0.1) 0%, hsl(285 80% 60% / 0.1) 100%);
+  color: hsl(258 75% 50%);
+  border: 1px solid hsl(258 80% 87%);
+  letter-spacing: 0.02em;
+}
+
+.ai-panel {
+  background: linear-gradient(180deg, hsl(258 85% 98%) 0%, hsl(0 0% 100%) 100%);
+  border-left: 3px solid hsl(258 85% 90%);
+}
+
+.dark .ai-panel {
+  background: linear-gradient(180deg, hsl(258 40% 14%) 0%, hsl(240 12% 12%) 100%);
+  border-left-color: hsl(258 50% 30%);
+}
+
+/* =====================================================
+   ANIMATIONS
+   ===================================================== */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+  70% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
+
+.animate-fade-in { animation: fade-in 250ms ease forwards; }
+.animate-slide-in { animation: slide-in-left 250ms ease forwards; }
+.animate-scale-in { animation: scale-in 200ms ease forwards; }
+.animate-pulse-ring { animation: pulse-ring 2s infinite; }
+
+/* =====================================================
+   CONFIDENCE INDICATOR
+   ===================================================== */
+.confidence-bar {
+  height: 4px;
+  border-radius: 99px;
+  background: hsl(var(--border));
+  overflow: hidden;
+}
+
+.confidence-fill-high { background: hsl(152 68% 40%); }
+.confidence-fill-medium { background: hsl(38 92% 52%); }
+.confidence-fill-low { background: hsl(4 90% 58%); }
+
+/* =====================================================
+   FOCUS RING — ACCESSIBILITY
+   ===================================================== */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* =====================================================
+   DARK MODE OVERRIDES
+   ===================================================== */
+.dark .badge-purple {
+  background: hsl(258 40% 22%);
+  color: hsl(258 80% 78%);
+  border-color: hsl(258 45% 30%);
+}
+
+.dark .badge-green {
+  background: hsl(152 40% 16%);
+  color: hsl(152 60% 60%);
+  border-color: hsl(152 40% 25%);
+}
+
+.dark .badge-blue {
+  background: hsl(208 60% 16%);
+  color: hsl(208 80% 70%);
+  border-color: hsl(208 55% 25%);
+}
+
+.dark .badge-orange {
+  background: hsl(38 60% 16%);
+  color: hsl(38 80% 65%);
+  border-color: hsl(38 55% 25%);
+}
+
+.dark .stat-card-purple {
+  background: hsl(258 40% 16% / 0.5);
+  border-color: hsl(258 45% 25%);
+}
+
+/* =====================================================
+   LEGACY COMPATIBILITY SHIMS
+   ===================================================== */
+/* Keeps existing utility classes working */
+.ai-gradient {
+  background: linear-gradient(135deg, hsl(258 90% 62%) 0%, hsl(285 75% 58%) 100%);
+}
+
+.ai-gradient-text {
+  background: linear-gradient(135deg, hsl(258 90% 62%) 0%, hsl(285 75% 58%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ai-glow {
+  box-shadow: 0 4px 14px hsl(258 90% 62% / 0.35);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .glass {
+  background: rgba(20, 18, 36, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.kbd {
+  @apply inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-medium bg-muted border border-border rounded-md;
+}
