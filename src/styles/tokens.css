@@ -1,0 +1,96 @@
+/* Luma Resolve — Design Tokens (single source of truth)
+   Blueprint: Luma_Resolve_Redesign_Blueprint_2026-11-23.md, Section 6
+   Rules: OKLCH throughout · neutrals + semantics only · NO purple/violet,
+   NO gradients, NO glow · borders are black/white alpha, never solid hex.
+   Target location in repo: src/styles/tokens.css (imported first by index.css)
+*/
+
+:root {
+  /* ——— Luma Blue (primary) — own shade in the Salesforce/Zendesk/Atlassian family
+         #1464CC on white = 5.64:1 (WCAG AA for button text) ——— */
+  --luma-blue-700: oklch(0.43 0.16 258); /* active  ≈ #0D4289 */
+  --luma-blue-600: oklch(0.47 0.17 258); /* hover   ≈ #0F4FA3 */
+  --luma-blue-500: oklch(0.52 0.17 258); /* primary ≈ #1464CC */
+  --luma-blue-100: oklch(0.95 0.03 258); /* selected / subtle bg ≈ #EAF2FC */
+  --luma-blue-050: oklch(0.97 0.015 258);
+
+  /* ——— Neutrals (zero chroma — no warm/cool tint wars) ——— */
+  --surface:        oklch(1 0 0);        /* app background */
+  --surface-raised: oklch(0.975 0 0);    /* panels, cards */
+  --surface-sunken: oklch(0.955 0 0);    /* table header, wells */
+  --ink:            oklch(0.22 0 0);     /* primary text */
+  --ink-muted:      oklch(0.52 0 0);     /* secondary text */
+  --ink-faint:      oklch(0.68 0 0);     /* meta, placeholders */
+  --border:         rgb(0 0 0 / 0.10);   /* default — alpha, blends on any surface */
+  --border-strong:  rgb(0 0 0 / 0.16);   /* inputs, emphasis */
+
+  /* ——— Semantic (status / SLA / confidence ONLY — always with a text label) ——— */
+  --ok:        oklch(0.52 0.13 155);  --ok-bg:        oklch(0.95 0.04 155);
+  --warn:      oklch(0.55 0.13 70);   --warn-bg:      oklch(0.95 0.05 80);
+  --danger:    oklch(0.52 0.19 25);   --danger-bg:    oklch(0.95 0.04 25);
+  --info:      var(--luma-blue-500);  --info-bg:      var(--luma-blue-100);
+
+  /* ——— Action aliases (components use these, never raw palette) ——— */
+  --action:          var(--luma-blue-500);
+  --action-hover:    var(--luma-blue-600);
+  --action-active:   var(--luma-blue-700);
+  --action-subtle:   var(--luma-blue-100);
+  --on-action:       oklch(1 0 0);
+  --focus-ring:      rgb(20 100 204 / 0.40);
+
+  /* ——— Type (Inter; 4 working sizes — Section 6.3) ——— */
+  --font-sans: "Inter", ui-sans-system, system-ui, sans-serif;
+  --text-meta: 12px;  --text-ui: 13px;  --text-body: 14px;
+  --text-title: 16px; --text-screen: 20px;
+  --leading-ui: 1.45; --leading-body: 1.6;
+
+  /* ——— Space (4/8 scale; breathing-room rule is checked per screen) ——— */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-6: 24px; --space-8: 32px;
+
+  /* ——— Radius (nested rule: inner = outer − padding) ——— */
+  --radius-control: 6px; --radius-card: 8px; --radius-modal: 12px;
+
+  /* ——— Elevation: borders first; one shadow, menus/modals only ——— */
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.12);
+
+  /* ——— Density (locked: Linear-style compact) ——— */
+  --row-height: 40px;        /* queue rows */
+  --control-height: 32px;    /* inputs, secondary buttons */
+  --control-height-lg: 40px; /* primary buttons */
+  --nav-width: 224px;
+
+  /* ——— Motion (standing animation rules: <300ms, ease-out, exits −20%) ——— */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms; --dur: 180ms; --dur-exit: 145ms;
+}
+
+/* ——— Dark: depth from LIGHTER surfaces, shadows off; blue steps lighter ——— */
+.dark {
+  --surface:        oklch(0.19 0 0);
+  --surface-raised: oklch(0.23 0 0);
+  --surface-sunken: oklch(0.16 0 0);
+  --ink:            oklch(0.93 0 0);
+  --ink-muted:      oklch(0.70 0 0);
+  --ink-faint:      oklch(0.55 0 0);
+  --border:         rgb(255 255 255 / 0.10);
+  --border-strong:  rgb(255 255 255 / 0.18);
+
+  --action:         oklch(0.72 0.13 258); /* ≈ #6EA8F0 — 6.86:1 on dark surface */
+  --action-hover:   oklch(0.78 0.11 258);
+  --action-active:  oklch(0.65 0.14 258);
+  --action-subtle:  oklch(0.30 0.07 258);
+  --on-action:      oklch(0.16 0.02 258);
+  --focus-ring:     rgb(110 168 240 / 0.45);
+
+  --ok:     oklch(0.72 0.13 155); --ok-bg:     oklch(0.30 0.06 155);
+  --warn:   oklch(0.78 0.13 80);  --warn-bg:   oklch(0.32 0.06 80);
+  --danger: oklch(0.70 0.16 25);  --danger-bg: oklch(0.31 0.07 25);
+  --info-bg: var(--action-subtle);
+
+  --shadow-overlay: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-exit: 0ms; }
+}
