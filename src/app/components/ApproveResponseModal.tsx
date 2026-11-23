@@ -1,14 +1,10 @@
 import React from 'react';
-import { Send, Edit3 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
-import { Button } from './ui/button';
+import { ModalShell, modal } from './ModalShell';
+
+/* Luma Resolve — Approve Response (Redesign Step 4)
+   Same props as before; rebuilt on tokens without the shadcn Dialog.
+   One job: show the exact text that will be sent, to whom, and let the
+   human send it, edit it, or back out. Nothing else competes with that. */
 
 interface ApproveResponseModalProps {
   isOpen: boolean;
@@ -19,46 +15,27 @@ interface ApproveResponseModalProps {
   customerName: string;
 }
 
-export function ApproveResponseModal({
-  isOpen,
-  onClose,
-  onSend,
-  onEdit,
-  draftResponse,
-  customerName
-}: ApproveResponseModalProps) {
+export function ApproveResponseModal({ isOpen, onClose, onSend, onEdit, draftResponse, customerName }: ApproveResponseModalProps) {
+  if (!isOpen) return null;
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[560px]">
-        <DialogHeader>
-          <DialogTitle>Approve Response</DialogTitle>
-          <DialogDescription>
-            Review the AI-generated response before sending to{' '}
-            <span className="text-foreground font-medium">{customerName}</span>.
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Full Preview */}
-        <div className="bg-muted p-6 rounded-lg">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {draftResponse}
-          </p>
-        </div>
-
-        <DialogFooter className="gap-2">
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="outline" onClick={onEdit} className="gap-2">
-            <Edit3 size={16} />
-            Edit
-          </Button>
-          <Button onClick={onSend} className="gap-2">
-            <Send size={16} />
-            Send Response
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ModalShell title="Approve response" onClose={onClose} maxWidth={560}
+      footer={
+        <>
+          <button style={modal.btnSecondary} onClick={onClose}>Cancel</button>
+          <button style={modal.btnSecondary} onClick={onEdit}>Edit first</button>
+          <button style={modal.btnPrimary} onClick={onSend}>Send to {customerName}</button>
+        </>
+      }>
+      <p style={{ fontSize: 'var(--text-ui)', color: 'var(--ink-muted)', margin: '0 0 12px' }}>
+        This is the exact message {customerName} will receive. Sending closes the loop on this draft — edits happen before, not after.
+      </p>
+      <div style={{
+        background: 'var(--surface-sunken)', border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-card)', padding: 16,
+        fontSize: 'var(--text-body)', lineHeight: 'var(--leading-body)', whiteSpace: 'pre-wrap',
+      }}>
+        {draftResponse}
+      </div>
+    </ModalShell>
   );
 }

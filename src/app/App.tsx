@@ -11,7 +11,6 @@ import { SettingsScreen } from './components/SettingsScreen';
 import { WelcomeTour } from './components/WelcomeTour';
 import { KnowledgeBaseScreen } from './components/KnowledgeBaseScreen';
 import { TeamCollaborationScreen } from './components/TeamCollaborationScreen';
-import { LumaResolveStageshowWalkthrough } from './components/LumaResolveStageshowWalkthrough';
 import { CommandPalette } from './components/CommandPalette';
 import { KeyboardShortcuts, useKeyboardShortcuts } from './components/KeyboardShortcuts';
 import { mockTickets } from './data/mockData';
@@ -24,8 +23,7 @@ type CurrentView =
   | { type: 'analytics' }
   | { type: 'settings' }
   | { type: 'knowledge-base' }
-  | { type: 'team' }
-  | { type: 'stageshow-walkthrough' };
+  | { type: 'team' };
 
 export default function App() {
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -197,10 +195,6 @@ export default function App() {
       case 'settings':
         setCurrentView({ type: 'settings' });
         break;
-      case 'stageshow-walkthrough':
-      case 'stageshow':
-        setCurrentView({ type: 'stageshow-walkthrough' });
-        break;
     }
   };
 
@@ -294,16 +288,6 @@ export default function App() {
     case 'settings':
       mainContent = (
         <SettingsScreen 
-          onBack={handleBackToDashboard}
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-        />
-      );
-      break;
-
-    case 'stageshow-walkthrough':
-      mainContent = (
-        <LumaResolveStageshowWalkthrough
           onBack={handleBackToDashboard}
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
