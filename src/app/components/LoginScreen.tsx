@@ -1,234 +1,97 @@
 import React, { useState } from 'react';
-import { Loader2, Sparkles, ArrowRight, ShieldCheck, Zap, Users } from 'lucide-react';
-import svgPaths from '../imports/svg-qy3ib0tgdz';
+import { Loader2 } from 'lucide-react';
+
+/* Luma Resolve — Login (Redesign Step 2, Blueprint Sections 4.7 + 6)
+   Plain, neutral, professional. No gradient panel, no testimonial,
+   no "enterprise security" claims, no demo-credentials button.
+   Signature fixed: onLogin now actually receives (email, password),
+   matching App.handleLogin — the mismatch the old code shipped silently.
+   NOTE: auth is still prototype-only (any non-empty credentials sign in).
+   The screen says so honestly instead of implying real security. */
 
 interface LoginScreenProps {
-  onLogin: () => void;
+  onLogin: (email: string, password: string) => void;
 }
+
+const s = {
+  page: {
+    minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'var(--surface-sunken)', padding: '24px',
+    fontFamily: 'var(--font-sans)', color: 'var(--ink)',
+  } as React.CSSProperties,
+  card: {
+    width: '100%', maxWidth: 360, background: 'var(--surface)',
+    border: '1px solid var(--border)', borderRadius: 'var(--radius-modal)', padding: 32,
+  } as React.CSSProperties,
+  wordmark: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.01em' } as React.CSSProperties,
+  sub: { fontSize: 'var(--text-body)', color: 'var(--ink-muted)', marginTop: 6 } as React.CSSProperties,
+  label: { display: 'block', fontSize: 'var(--text-ui)', fontWeight: 600, marginBottom: 6 } as React.CSSProperties,
+  input: {
+    width: '100%', height: 'var(--control-height-lg)', padding: '0 12px',
+    fontSize: 'var(--text-body)', color: 'var(--ink)', background: 'var(--surface)',
+    border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-control)',
+    outline: 'none', boxSizing: 'border-box',
+  } as React.CSSProperties,
+  button: {
+    width: '100%', height: 'var(--control-height-lg)', marginTop: 8,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+    fontSize: 'var(--text-body)', fontWeight: 600, color: 'var(--on-action)',
+    background: 'var(--action)', border: 'none', borderRadius: 'var(--radius-control)',
+    cursor: 'pointer',
+  } as React.CSSProperties,
+  error: {
+    fontSize: 'var(--text-ui)', color: 'var(--danger)', background: 'var(--danger-bg)',
+    borderRadius: 'var(--radius-control)', padding: '10px 12px', marginTop: 16,
+  } as React.CSSProperties,
+  note: { fontSize: 'var(--text-meta)', color: 'var(--ink-faint)', textAlign: 'center', marginTop: 20 } as React.CSSProperties,
+};
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-
-  const handleSampleCredentials = () => {
-    setEmail('agent@lumasolve.com');
-    setPassword('demo1234');
-    setError('');
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim() || !password) {
+      setError('Enter your email and password to continue.');
+      return;
+    }
     setError('');
     setIsLoading(true);
-    setTimeout(() => {
-      if (email && password) {
-        onLogin();
-      } else {
-        setError('Please enter your credentials to continue.');
-        setIsLoading(false);
-      }
-    }, 900);
+    // Prototype sign-in delay — replaced by a real auth call when the backend exists.
+    setTimeout(() => onLogin(email.trim(), password), 500);
   };
 
-  const features = [
-    { icon: Zap,        label: 'AI-powered resolution' },
-    { icon: ShieldCheck,label: 'Enterprise security'   },
-    { icon: Users,      label: 'Team collaboration'    },
-  ];
-
   return (
-    <div className="min-h-screen flex overflow-hidden bg-white">
-      {/* ── Left Panel — Brand / Illustration ── */}
-      <div className="hidden lg:flex w-[46%] flex-col relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(145deg, hsl(258,90%,62%) 0%, hsl(258,80%,48%) 50%, hsl(285,75%,45%) 100%)',
-        }}
-      >
-        {/* Decorative blobs */}
-        <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, white 0%, transparent 70%)' }} />
-        <div className="absolute bottom-[-60px] left-[-60px] w-56 h-56 rounded-full opacity-15"
-          style={{ background: 'radial-gradient(circle, white 0%, transparent 70%)' }} />
-        <div className="absolute bottom-[30%] right-[-40px] w-40 h-40 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, white 0%, transparent 70%)' }} />
+    <div style={s.page}>
+      <div style={{ width: '100%', maxWidth: 360 }}>
+        <form style={s.card} onSubmit={handleSubmit}>
+          <div style={s.wordmark}>Luma Resolve</div>
+          <p style={s.sub}>Sign in to the support workspace</p>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col h-full p-12">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
-              <Sparkles size={17} className="text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-white text-[18px] font-bold tracking-tight">LumaResolve</span>
+          {error && <div style={s.error}>{error}</div>}
+
+          <div style={{ marginTop: 24 }}>
+            <label htmlFor="email" style={s.label}>Email</label>
+            <input id="email" type="email" autoComplete="email" style={s.input}
+              value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@company.com" required />
           </div>
 
-          {/* Main headline */}
-          <div className="flex-1 flex flex-col justify-center gap-8">
-            <div>
-              <h1 className="text-4xl font-bold text-white leading-tight tracking-tight">
-                Resolve tickets<br />faster with AI
-              </h1>
-              <p className="text-white/70 text-[15px] mt-4 leading-relaxed max-w-xs">
-                Your intelligent customer support platform. Let AI handle the analysis while you focus on people.
-              </p>
-            </div>
-
-            {/* Feature pills */}
-            <div className="flex flex-col gap-3">
-              {features.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center border border-white/20">
-                    <Icon size={15} className="text-white" strokeWidth={2} />
-                  </div>
-                  <span className="text-white/85 text-[13px] font-medium">{label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Testimonial / social proof */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20">
-              <p className="text-white/90 text-[13px] leading-relaxed italic">
-                "LumaResolve cut our average resolution time by 40%. The AI suggestions are surprisingly accurate."
-              </p>
-              <div className="flex items-center gap-2.5 mt-3">
-                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
-                  <span className="text-white text-[10px] font-bold">SC</span>
-                </div>
-                <div>
-                  <p className="text-white text-[12px] font-semibold leading-tight">Sarah Chen</p>
-                  <p className="text-white/60 text-[11px]">Head of Support, Acme Corp</p>
-                </div>
-              </div>
-            </div>
+          <div style={{ marginTop: 16 }}>
+            <label htmlFor="password" style={s.label}>Password</label>
+            <input id="password" type="password" autoComplete="current-password" style={s.input}
+              value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password" required />
           </div>
 
-          {/* Footer */}
-          <p className="text-white/40 text-[11px]">© 2025 LumaResolve · v2.4.0</p>
-        </div>
-      </div>
-
-      {/* ── Right Panel — Login Form ── */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-[400px] space-y-8">
-          {/* Mobile logo */}
-          <div className="flex lg:hidden items-center gap-2.5 justify-center mb-2">
-            <div className="w-8 h-8 rounded-lg ai-gradient flex items-center justify-center ai-glow">
-              <Sparkles size={15} className="text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-[18px] font-bold brand-gradient-text">LumaResolve</span>
-          </div>
-
-          {/* Heading */}
-          <div className="text-center lg:text-left">
-            <h2 className="text-[26px] font-bold text-gray-900 tracking-tight">Welcome back</h2>
-            <p className="text-[14px] text-gray-400 mt-1">Sign in to your support dashboard</p>
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 text-[13px] px-4 py-3 rounded-xl animate-fade-in">
-              {error}
-            </div>
-          )}
-
-          {/* Form Card */}
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-5"
-          >
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="block text-[13px] font-semibold text-gray-700">
-                Email address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                placeholder="you@company.com"
-                required
-                className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl text-[13px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 ${
-                  focusedField === 'email'
-                    ? 'bg-white border-violet-400 ring-4 ring-violet-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-[13px] font-semibold text-gray-700">
-                  Password
-                </label>
-                <button type="button" className="text-[12px] text-violet-600 hover:text-violet-800 font-medium transition-colors">
-                  Forgot password?
-                </button>
-              </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-                placeholder="Enter your password"
-                required
-                className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl text-[13px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 ${
-                  focusedField === 'password'
-                    ? 'bg-white border-violet-400 ring-4 ring-violet-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              />
-            </div>
-
-            {/* Sign in button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-11 rounded-xl font-semibold text-[14px] text-white flex items-center justify-center gap-2.5 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{
-                background: isLoading
-                  ? 'hsl(258,90%,62%)'
-                  : 'linear-gradient(135deg, hsl(258,90%,62%) 0%, hsl(270,80%,56%) 100%)',
-                boxShadow: isLoading ? 'none' : '0 4px 14px hsl(258,90%,62%,0.4)',
-              }}
-            >
-              {isLoading ? (
-                <><Loader2 size={16} className="animate-spin" /> Signing in…</>
-              ) : (
-                <><ArrowRight size={16} /> Sign In</>
-              )}
-            </button>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-[12px] text-gray-400 font-medium">or</span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-
-            {/* Sample credentials */}
-            <button
-              type="button"
-              onClick={handleSampleCredentials}
-              className="w-full h-10 rounded-xl border-2 border-dashed border-violet-200 hover:border-violet-400 hover:bg-violet-50/50 text-[13px] font-semibold text-violet-600 hover:text-violet-700 transition-all duration-150 flex items-center justify-center gap-2"
-            >
-              <Sparkles size={13} />
-              Use Demo Credentials
-            </button>
-          </form>
-
-          <p className="text-center text-[12px] text-gray-400">
-            Protected by enterprise-grade encryption
-          </p>
-        </div>
+          <button type="submit" style={{ ...s.button, opacity: isLoading ? 0.7 : 1 }} disabled={isLoading}>
+            {isLoading ? <><Loader2 size={16} className="animate-spin" /> Signing in…</> : 'Sign in'}
+          </button>
+        </form>
+        <p style={s.note}>Prototype build — any email and password will sign you in. No real accounts yet.</p>
       </div>
     </div>
   );
