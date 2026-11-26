@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, Bold, Italic, AlignLeft } from 'lucide-react';
-import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
+import { ArrowLeft, Moon, Sun } from 'lucide-react';
+
+/* Luma Resolve — Edit Response (Redesign Step 4)
+   Same props as before. A plain full-screen editor: the text, a word
+   count, variable insertion, save or back. The old screen's "tone
+   slider" pretended to restyle text it never changed — removed rather
+   than faked. Tone is chosen in Settings, where it actually applies. */
 
 interface EditResponseScreenProps {
   onBack: () => void;
@@ -14,188 +16,56 @@ interface EditResponseScreenProps {
   onToggleDarkMode?: () => void;
 }
 
-export function EditResponseScreen({
-  onBack,
-  onSave,
-  initialDraft,
-  customerName,
-  isDarkMode,
-  onToggleDarkMode
-}: EditResponseScreenProps) {
+const VARIABLES = ['customer_name', 'ticket_id', 'agent_name', 'company_name'];
+
+export function EditResponseScreen({ onBack, onSave, initialDraft, customerName, isDarkMode, onToggleDarkMode }: EditResponseScreenProps) {
   const [response, setResponse] = useState(initialDraft);
-  const [toneLevel, setToneLevel] = useState(50);
+  const words = response.trim() ? response.trim().split(/\s+/).length : 0;
 
-  const handleInsertVariable = (variable: string) => {
-    setResponse(prev => prev + `{{${variable}}}`);
-  };
+  const insertVariable = (v: string) => setResponse((prev) => `${prev}{{${v}}}`);
 
-  const handleAIRewrite = () => {
-    alert('AI is rewriting your response...');
-  };
-
-  const handleSave = () => {
-    onSave(response);
-  };
+  const btn = (primary: boolean): React.CSSProperties => ({
+    height: 'var(--control-height)', padding: '0 16px', fontSize: 'var(--text-ui)', fontWeight: 600,
+    color: primary ? 'var(--on-action)' : 'var(--ink)',
+    background: primary ? 'var(--action)' : 'var(--surface)',
+    border: primary ? 'none' : '1px solid var(--border-strong)',
+    borderRadius: 'var(--radius-control)', cursor: 'pointer',
+  });
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Top Bar */}
-      <div className="border-b border-border/40 bg-card flex-shrink-0">
-        <div className="px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft size={20} />
-            </Button>
-            <h1 className="text-xl font-semibold">Edit Response</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={onBack}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              Save & Return
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div style={{ minHeight: '100vh', background: 'var(--surface-sunken)', color: 'var(--ink)', fontFamily: 'var(--font-sans)' }}>
+      <header style={{ height: 56, display: 'flex', alignItems: 'center', gap: 12, padding: '0 24px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <button onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', fontSize: 'var(--text-ui)', fontWeight: 600, color: 'var(--action)', cursor: 'pointer' }}>
+          <ArrowLeft size={16} /> Back to ticket
+        </button>
+        <h1 style={{ fontSize: 'var(--text-title)', fontWeight: 600, margin: 0 }}>Edit response to {customerName}</h1>
+        <div style={{ flex: 1 }} />
+        <button onClick={onToggleDarkMode} aria-label="Toggle dark mode" style={{ width: 32, height: 32, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-control)', color: 'var(--ink-muted)', cursor: 'pointer' }}>
+          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Editor Area */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-4xl mx-auto">
-            {/* Rich Text Toolbar */}
-            <Card className="mb-4">
-              <CardContent className="p-3 flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Bold size={16} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Italic size={16} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <AlignLeft size={16} />
-                </Button>
-
-                <Separator orientation="vertical" className="mx-2 h-6" />
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleInsertVariable('customer_name')}
-                >
-                  @customer_name
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleInsertVariable('ticket_id')}
-                >
-                  @ticket_id
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Editor */}
-            <Textarea
-              value={response}
-              onChange={(e) => setResponse(e.target.value)}
-              className="min-h-[400px] rounded-t-lg rounded-b-lg text-base"
-              placeholder="Write your response here..."
-            />
-
-            {/* Preview */}
-            <Card className="mt-8">
-              <CardHeader>
-                <CardTitle className="text-sm">Preview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {response.replace(/\{\{customer_name\}\}/g, customerName)}
-                </p>
-              </CardContent>
-            </Card>
+      <main style={{ maxWidth: 820, margin: '0 auto', padding: 24 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-card)', padding: 16 }}>
+          <textarea value={response} onChange={(e) => setResponse(e.target.value)} rows={16} autoFocus
+            style={{ width: '100%', padding: 12, fontSize: 'var(--text-body)', lineHeight: 'var(--leading-body)', color: 'var(--ink)', background: 'var(--surface)', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-control)', boxSizing: 'border-box', fontFamily: 'var(--font-sans)', resize: 'vertical' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 'var(--text-meta)', color: 'var(--ink-muted)', marginRight: 4 }}>Insert:</span>
+            {VARIABLES.map((v) => (
+              <button key={v} onClick={() => insertVariable(v)}
+                style={{ height: 26, padding: '0 10px', fontSize: 'var(--text-meta)', fontWeight: 600, color: 'var(--ink-muted)', background: 'var(--surface-sunken)', border: '1px solid var(--border)', borderRadius: 999, cursor: 'pointer' }}>
+                {`{{${v}}}`}
+              </button>
+            ))}
+            <div style={{ flex: 1 }} />
+            <span style={{ fontSize: 'var(--text-meta)', color: 'var(--ink-faint)', fontVariantNumeric: 'tabular-nums' }}>{words} words</span>
           </div>
         </div>
-
-        {/* Right Sidebar */}
-        <div className="w-[320px] border-l bg-muted/30 overflow-y-auto p-6 space-y-6">
-          {/* Tone Slider */}
-          <div>
-            <h3 className="text-sm font-medium mb-4">Tone of Voice</h3>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={toneLevel}
-              onChange={(e) => setToneLevel(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground mt-2">
-              <span>Formal</span>
-              <span>Friendly</span>
-            </div>
-          </div>
-
-          {/* AI Assist Button */}
-          <div>
-            <Button onClick={handleAIRewrite} className="w-full gap-2">
-              <Sparkles size={16} />
-              Rewrite with AI
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">
-              AI will adjust the tone and improve clarity while keeping your message intact.
-            </p>
-          </div>
-
-          {/* Insert Variables */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">Insert Variables</h3>
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handleInsertVariable('customer_name')}
-              >
-                Customer Name
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handleInsertVariable('ticket_id')}
-              >
-                Ticket ID
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handleInsertVariable('company_name')}
-              >
-                Company Name
-              </Button>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
-            <div className="space-y-2">
-              <Button variant="secondary" size="sm" className="w-full justify-start text-xs">
-                Make more empathetic
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start text-xs">
-                Make more concise
-              </Button>
-              <Button variant="secondary" size="sm" className="w-full justify-start text-xs">
-                Add technical details
-              </Button>
-            </div>
-          </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+          <button style={btn(true)} onClick={() => onSave(response)}>Save draft</button>
+          <button style={btn(false)} onClick={onBack}>Discard changes</button>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

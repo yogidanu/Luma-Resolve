@@ -1,273 +1,120 @@
 import React, { useState } from 'react';
-import { ArrowLeft, User, Bell, MessageSquare, Database, Check } from 'lucide-react';
+import { SubHeader, sub, type SubScreenProps } from './SubScreen';
 
-interface SettingsScreenProps {
-  onBack: () => void;
-  isDarkMode?: boolean;
-  onToggleDarkMode?: () => void;
+/* Luma Resolve — Settings (Redesign Step 3, Blueprint 4.5 + 7)
+   Grouped the way the blueprint's governance model works: your profile,
+   AI behaviour (the controls a lead actually owns), notifications,
+   appearance, and workspace roles shown read-only with who can change
+   them — instead of one long undifferentiated form. All local state:
+   prototype only, nothing here persists yet. */
+
+function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; label: string }) {
+  return (
+    <button role="switch" aria-checked={on} aria-label={label} onClick={onClick}
+      style={{
+        width: 36, height: 20, borderRadius: 999, border: 'none', cursor: 'pointer', flexShrink: 0,
+        background: on ? 'var(--action)' : 'var(--border-strong)', position: 'relative',
+        transition: 'background var(--motion-fast) var(--ease-out)',
+      }}>
+      <span style={{
+        position: 'absolute', top: 2, left: on ? 18 : 2, width: 16, height: 16, borderRadius: 999,
+        background: 'var(--surface)', transition: 'left var(--motion-fast) var(--ease-out)',
+      }} />
+    </button>
+  );
 }
 
-export function SettingsScreen({ onBack, isDarkMode, onToggleDarkMode }: SettingsScreenProps) {
-  const [selectedTone, setSelectedTone] = useState('professional');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [desktopNotifications, setDesktopNotifications] = useState(true);
-  const [aiSuggestions, setAiSuggestions] = useState(true);
-  const [kbConnected, setKbConnected] = useState(true);
+function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 'var(--text-ui)', fontWeight: 600 }}>{label}</div>
+        {hint && <div style={{ fontSize: 'var(--text-meta)', color: 'var(--ink-muted)' }}>{hint}</div>}
+      </div>
+      {children}
+    </div>
+  );
+}
 
-  const toneOptions = [
-    {
-      value: 'neutral',
-      label: 'Neutral',
-      description: 'Balanced and straightforward communication'
-    },
-    {
-      value: 'professional',
-      label: 'Professional',
-      description: 'Formal and business-appropriate tone'
-    },
-    {
-      value: 'friendly',
-      label: 'Friendly',
-      description: 'Warm and approachable language'
-    },
-    {
-      value: 'crisp-intelligent',
-      label: 'Crisp Intelligent',
-      description: 'Clear, concise, and authoritative'
-    },
-    {
-      value: 'empathetic',
-      label: 'Empathetic',
-      description: 'Understanding and compassionate'
-    }
-  ];
+const selectStyle: React.CSSProperties = {
+  height: 'var(--control-height)', padding: '0 8px', fontSize: 'var(--text-ui)', color: 'var(--ink)',
+  background: 'var(--surface)', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-control)',
+};
+
+export function SettingsScreen(props: SubScreenProps) {
+  const [autoDraft, setAutoDraft] = useState(true);
+  const [emailNotifs, setEmailNotifs] = useState(true);
+  const [mentionNotifs, setMentionNotifs] = useState(true);
+  const [threshold, setThreshold] = useState('60');
+  const [tone, setTone] = useState('professional');
+  const [saved, setSaved] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Bar */}
-      <div className="bg-card border-b border-border/40">
-        <div className="px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onBack}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <h1 className="text-[20px] font-bold text-foreground">Settings</h1>
+    <div style={sub.page}>
+      <SubHeader title="Settings" {...props} />
+      <div style={{ ...sub.content, maxWidth: 760 }}>
+        <section style={sub.panel}>
+          <div style={sub.panelTitle}>Profile</div>
+          <div style={{ fontSize: 'var(--text-body)', fontWeight: 600 }}>Agent User</div>
+          <div style={sub.muted}>agent@lumasolve.com · Senior Support Agent</div>
+        </section>
+
+        <section style={sub.panel}>
+          <div style={sub.panelTitle}>AI behaviour</div>
+          <Row label="Draft a response automatically" hint="A draft is prepared when a ticket opens. It is never sent without a human.">
+            <Toggle on={autoDraft} onClick={() => setAutoDraft(!autoDraft)} label="Draft a response automatically" />
+          </Row>
+          <Row label="Collapse drafts below this confidence" hint="Low-confidence drafts start collapsed, prompting clarifying questions instead.">
+            <select value={threshold} onChange={(e) => setThreshold(e.target.value)} style={selectStyle}>
+              <option value="50">50%</option>
+              <option value="60">60%</option>
+              <option value="70">70%</option>
+            </select>
+          </Row>
+          <Row label="Default draft tone">
+            <select value={tone} onChange={(e) => setTone(e.target.value)} style={selectStyle}>
+              <option value="professional">Professional</option>
+              <option value="friendly">Friendly</option>
+              <option value="concise">Concise</option>
+            </select>
+          </Row>
+        </section>
+
+        <section style={sub.panel}>
+          <div style={sub.panelTitle}>Notifications</div>
+          <Row label="Email notifications">
+            <Toggle on={emailNotifs} onClick={() => setEmailNotifs(!emailNotifs)} label="Email notifications" />
+          </Row>
+          <Row label="Mentions and handoffs">
+            <Toggle on={mentionNotifs} onClick={() => setMentionNotifs(!mentionNotifs)} label="Mentions and handoffs" />
+          </Row>
+        </section>
+
+        <section style={sub.panel}>
+          <div style={sub.panelTitle}>Appearance</div>
+          <Row label="Dark mode" hint="In dark mode, depth comes from lighter surfaces, not shadows.">
+            <Toggle on={!!props.isDarkMode} onClick={() => props.onToggleDarkMode?.()} label="Dark mode" />
+          </Row>
+        </section>
+
+        <section style={sub.panel}>
+          <div style={sub.panelTitle}>Workspace roles — read-only</div>
+          <div style={{ fontSize: 'var(--text-ui)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span>Agent — works tickets, approves own drafts</span>
+            <span>Lead — all of Agent, plus AI behaviour settings and team view</span>
+            <span>Admin — all of Lead, plus roles, retention and audit log</span>
           </div>
-        </div>
-      </div>
+          <p style={{ ...sub.muted, fontSize: 'var(--text-meta)', marginTop: 10 }}>
+            Roles are changed by an Admin in the workspace directory, not from this screen.
+          </p>
+        </section>
 
-      {/* Main Content */}
-      <div className="p-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* User Profile Section */}
-          <div className="bg-white border border-[#EAEAED] rounded-[8px] p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[rgba(76,132,255,0.12)] rounded-[8px] flex items-center justify-center">
-                <User size={20} className="text-[#4C84FF]" />
-              </div>
-              <h2 className="text-[18px]">User Profile</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[13px] text-[#5E5E5E] mb-2">Full Name</label>
-                  <input
-                    type="text"
-                    defaultValue="Agent User"
-                    className="w-full px-4 py-3 bg-white border border-[#D7D7DA] rounded-[6px] text-[14px] outline-none focus:border-[#4C84FF] focus:ring-2 focus:ring-[rgba(76,132,255,0.12)] transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[13px] text-[#5E5E5E] mb-2">Email</label>
-                  <input
-                    type="email"
-                    defaultValue="agent@company.com"
-                    className="w-full px-4 py-3 bg-white border border-[#D7D7DA] rounded-[6px] text-[14px] outline-none focus:border-[#4C84FF] focus:ring-2 focus:ring-[rgba(76,132,255,0.12)] transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[13px] text-[#5E5E5E] mb-2">Role</label>
-                <input
-                  type="text"
-                  defaultValue="Support Agent"
-                  disabled
-                  className="w-full px-4 py-3 bg-[#F6F6F7] border border-[#EAEAED] rounded-[6px] text-[14px] text-[#5E5E5E]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Tone of Voice Preferences */}
-          <div className="bg-white border border-[#EAEAED] rounded-[8px] p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[rgba(76,132,255,0.12)] rounded-[8px] flex items-center justify-center">
-                <MessageSquare size={20} className="text-[#4C84FF]" />
-              </div>
-              <h2 className="text-[18px]">Tone of Voice Preferences</h2>
-            </div>
-
-            <p className="text-[13px] text-[#5E5E5E] mb-6">
-              Select your preferred tone for AI-generated responses. This will influence how LumaAI drafts messages to customers.
-            </p>
-
-            <div className="space-y-3">
-              {toneOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setSelectedTone(option.value)}
-                  className={`w-full p-4 border rounded-[8px] text-left transition-all ${
-                    selectedTone === option.value
-                      ? 'border-[#4C84FF] bg-[rgba(76,132,255,0.08)]'
-                      : 'border-[#EAEAED] bg-white hover:bg-[#FAFAFA]'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="text-[14px] mb-1">{option.label}</div>
-                      <div className="text-[13px] text-[#5E5E5E]">{option.description}</div>
-                    </div>
-                    {selectedTone === option.value && (
-                      <div className="w-5 h-5 bg-[#4C84FF] rounded-full flex items-center justify-center flex-shrink-0 ml-3">
-                        <Check size={14} className="text-white" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Notification Settings */}
-          <div className="bg-white border border-[#EAEAED] rounded-[8px] p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[rgba(76,132,255,0.12)] rounded-[8px] flex items-center justify-center">
-                <Bell size={20} className="text-[#4C84FF]" />
-              </div>
-              <h2 className="text-[18px]">Notification Settings</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-[#EAEAED]">
-                <div>
-                  <div className="text-[14px] mb-1">Email Notifications</div>
-                  <div className="text-[13px] text-[#5E5E5E]">Receive email alerts for new tickets</div>
-                </div>
-                <button
-                  onClick={() => setEmailNotifications(!emailNotifications)}
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    emailNotifications ? 'bg-[#4C84FF]' : 'bg-[#D7D7DA]'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                      emailNotifications ? 'translate-x-6' : 'translate-x-0.5'
-                    }`}
-                  ></div>
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between py-3 border-b border-[#EAEAED]">
-                <div>
-                  <div className="text-[14px] mb-1">Desktop Notifications</div>
-                  <div className="text-[13px] text-[#5E5E5E]">Show desktop alerts for urgent tickets</div>
-                </div>
-                <button
-                  onClick={() => setDesktopNotifications(!desktopNotifications)}
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    desktopNotifications ? 'bg-[#4C84FF]' : 'bg-[#D7D7DA]'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                      desktopNotifications ? 'translate-x-6' : 'translate-x-0.5'
-                    }`}
-                  ></div>
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <div className="text-[14px] mb-1">AI Suggestions</div>
-                  <div className="text-[13px] text-[#5E5E5E]">Enable real-time AI assistance</div>
-                </div>
-                <button
-                  onClick={() => setAiSuggestions(!aiSuggestions)}
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    aiSuggestions ? 'bg-[#4C84FF]' : 'bg-[#D7D7DA]'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                      aiSuggestions ? 'translate-x-6' : 'translate-x-0.5'
-                    }`}
-                  ></div>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Knowledge Base Integration */}
-          <div className="bg-white border border-[#EAEAED] rounded-[8px] p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[rgba(76,132,255,0.12)] rounded-[8px] flex items-center justify-center">
-                <Database size={20} className="text-[#4C84FF]" />
-              </div>
-              <h2 className="text-[18px]">Knowledge Base Integration</h2>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-[rgba(46,182,125,0.08)] border border-[rgba(46,182,125,0.20)] rounded-[8px] mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#2EB67D] rounded-full flex items-center justify-center">
-                  <Check size={20} className="text-white" />
-                </div>
-                <div>
-                  <div className="text-[14px]">Connected</div>
-                  <div className="text-[12px] text-[#5E5E5E]">Knowledge base synced 2 minutes ago</div>
-                </div>
-              </div>
-              <button className="px-4 py-2 bg-white border border-[#EAEAED] text-[#1F1F1F] rounded-[6px] text-[13px] hover:bg-[#FAFAFA] transition-colors">
-                Refresh
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-[13px]">
-                <span className="text-[#5E5E5E]">Total Articles</span>
-                <span>1,247</span>
-              </div>
-              <div className="flex items-center justify-between text-[13px]">
-                <span className="text-[#5E5E5E]">Last Updated</span>
-                <span>Nov 28, 2024</span>
-              </div>
-              <div className="flex items-center justify-between text-[13px]">
-                <span className="text-[#5E5E5E]">AI Training Status</span>
-                <span className="text-[#2EB67D]">Active</span>
-              </div>
-            </div>
-
-            <button className="w-full mt-6 px-4 py-3 bg-[#F6F6F7] text-[#1F1F1F] border border-[#EAEAED] rounded-[6px] text-[14px] hover:bg-[#EAEAED] transition-colors">
-              Manage Knowledge Base
-            </button>
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end gap-3">
-            <button
-              onClick={onBack}
-              className="px-6 py-3 bg-white border border-[#EAEAED] text-[#1F1F1F] rounded-[6px] text-[14px] hover:bg-[#FAFAFA] transition-colors"
-            >
-              Cancel
-            </button>
-            <button className="px-6 py-3 bg-[#4C84FF] text-white rounded-[6px] text-[14px] hover:bg-[#3D73E8] transition-colors">
-              Save Changes
-            </button>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2000); }}
+            style={{ height: 'var(--control-height)', padding: '0 16px', fontSize: 'var(--text-ui)', fontWeight: 600, color: 'var(--on-action)', background: 'var(--action)', border: 'none', borderRadius: 'var(--radius-control)', cursor: 'pointer' }}>
+            Save changes
+          </button>
+          {saved && <span style={{ fontSize: 'var(--text-ui)', color: 'var(--ok)' }}>Saved (prototype — not persisted yet)</span>}
         </div>
       </div>
     </div>
