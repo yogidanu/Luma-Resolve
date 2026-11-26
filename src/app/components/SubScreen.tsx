@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { ArrowLeft, Moon, Sun, Search } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, Moon, Sun } from 'lucide-react';
 
 /* Shared shell for the Step 3 screens (KB / Team / Analytics / Settings).
    Same header pattern as the Step 2 Queue and Ticket screens:
